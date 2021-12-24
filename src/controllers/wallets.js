@@ -24,8 +24,8 @@ const insertWallets = async (req, res, next) => {
       balance: balance,
       id_user: id_user
     }
-    const result = await modelWallets.insertWallets(data)
-    commonHelper.response(res, result, 201, 'submitted successfully')
+    await modelWallets.insertWallets(data)
+    commonHelper.response(res, data, 201, 'submitted successfully')
   } catch (error) {
     console.log(error)
     const err = new createError.InternalServerError()
@@ -44,8 +44,8 @@ const updateWallets = async (req, res, next) => {
       balance: balance,
       id_user: id_user
     }
-    const result = await modelWallets.updateWallets(data, id)
-    commonHelper.response(res, result, 200, 'updated successfully')
+    await modelWallets.updateWallets(data, id)
+    commonHelper.response(res, data, 200, 'updated successfully')
   } catch (error) {
     console.log(error)
     const err = new createError.InternalServerError()
@@ -57,8 +57,8 @@ const deleteWallets = async (req, res, next) => {
   try {
     const id = req.params.id
 
-    const result = await modelWallets.deleteWallets(id)
-    commonHelper.response(res, result, 200, 'deleted successfully')
+    await modelWallets.deleteWallets(id)
+    commonHelper.response(res, id, 200, 'deleted successfully')
   } catch (error) {
     console.log(error)
     const err = new createError.InternalServerError()

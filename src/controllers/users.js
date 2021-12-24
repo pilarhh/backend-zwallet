@@ -37,8 +37,8 @@ const insertUsers = async (req, res, next) => {
       password: password,
       pin: pin
     }
-    const result = await modelUsers.insertUsers(data)
-    commonHelper.response(res, result, 201, 'submitted successfully')
+    await modelUsers.insertUsers(data)
+    commonHelper.response(res, data, 201, 'submitted successfully')
   } catch (error) {
     console.log(error)
     const err = new createError.InternalServerError()
@@ -57,8 +57,8 @@ const updateUsers = async (req, res, next) => {
       pin: pin,
       updated_at: new Date()
     }
-    const result = await modelUsers.updateUsers(data, id)
-    commonHelper.response(res, result, 200, 'updated successfully')
+    await modelUsers.updateUsers(data, id)
+    commonHelper.response(res, data, 200, 'updated successfully')
   } catch (error) {
     console.log(error)
     const err = new createError.InternalServerError()
@@ -70,8 +70,8 @@ const deleteUsers = async (req, res, next) => {
   try {
     const id = req.params.id
 
-    const result = await modelUsers.deleteUsers(id)
-    commonHelper.response(res, result, 200, 'deleted successfully')
+    await modelUsers.deleteUsers(id)
+    commonHelper.response(res, id, 200, `data with id ${id} deleted successfully`)
   } catch (error) {
     console.log(error)
     const err = new createError.InternalServerError()

@@ -5,7 +5,7 @@ const commonHelper = require('../helpers/common')
 
 const getTransaction = async (req, res, next) => {
   try {
-    const sort = req.query.sort || 'date_time'
+    const sort = req.query.sort || 'created_at'
     const order = req.query.order || 'desc'
     const result = await modelTransaction.getTransaction({
       sort: sort,
@@ -28,8 +28,8 @@ const insertTransaction = async (req, res, next) => {
       id_sender: id_sender,
       id_receiver: id_receiver
     }
-    const result = await modelTransaction.insertTransaction(data)
-    commonHelper.response(res, result, 201, 'submitted successfully')
+    await modelTransaction.insertTransaction(data)
+    commonHelper.response(res, data, 201, 'submitted successfully')
   } catch (error) {
     console.log(error)
     const err = new createError.InternalServerError()
@@ -48,8 +48,8 @@ const updateTransaction = async (req, res, next) => {
       id_receiver: id_receiver,
       updated_at: new Date()
     }
-    const result = await modelTransaction.updateTransaction(data, id)
-    commonHelper.response(res, result, 200, 'updated successfully')
+    await modelTransaction.updateTransaction(data, id)
+    commonHelper.response(res, data, 200, 'updated successfully')
   } catch (error) {
     console.log(error)
     const err = new createError.InternalServerError()
@@ -61,8 +61,8 @@ const deleteTransaction = async (req, res, next) => {
   try {
     const id = req.params.id
 
-    const result = await modelTransaction.deleteTransaction(id)
-    commonHelper.response(res, result, 200, 'deleted successfully')
+    await modelTransaction.deleteTransaction(id)
+    commonHelper.response(res, id, 200, 'deleted successfully')
   } catch (error) {
     console.log(error)
     const err = new createError.InternalServerError()

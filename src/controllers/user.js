@@ -8,6 +8,7 @@ const login = async (req, res, next) => {
   try {
     const { email, password } = req.body
     const [user] = await userModel.find(email)
+    console.log(user)
     if (!user) {
       return next(createError(403, 'email atau password anda salah'))
     }
@@ -23,30 +24,24 @@ const login = async (req, res, next) => {
 
 const register = async (req, res, next) => {
   try {
-    const { email, password, name } = req.body
+    const { username, email, password, pin } = req.body
 
     const user = await userModel.find(email)
-    // console.log(user);
     console.log(user)
     if (user.length > 0) {
-      return next(createError(403, 'email is ready'))
+      return next(createError(403, 'this email has already been used'))
     }
-
-    // eslint-disable-next-line node/handle-callback-err
-    // bcrypt.genSalt(10, (err, salt) => {
-    //   // console.log(err);
-    //   console.log(salt);
-    // });
 
     const passwordHash = await bcrypt.hash(password, 10)
     const data = {
       id: uuidv4(),
+      username,
       email,
       password: passwordHash,
-      name
+      pin
     }
-    const resultInsert = await userModel.create(data)
-    commonHelper.response(res, resultInsert, 201, 'berhasil insert')
+    await userModel.create(data)
+    commonHelper.response(res, data, 201, 'submitted successfully')
   } catch (error) {
     console.log(error)
     next(new createError.InternalServerError())
