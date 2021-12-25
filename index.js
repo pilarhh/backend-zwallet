@@ -3,7 +3,6 @@ const express = require('express')
 const usersRoute = require('./src/routes/users')
 const walletsRoute = require('./src/routes/wallets')
 const transactionRoute = require('./src/routes/transaction')
-const userRoute = require('./src/routes/user')
 const commonHelper = require('./src/helpers/common')
 const cors = require('cors')
 const morgan = require('morgan')
@@ -18,7 +17,6 @@ app.use(express.urlencoded({ extended: false }))
 app.use('/users', usersRoute)
 app.use('/wallets', walletsRoute)
 app.use('/transaction', transactionRoute)
-app.use('/user', userRoute)
 
 app.use(commonHelper.handleNotFound)
 
@@ -26,4 +24,5 @@ app.use(commonHelper.errorHandling)
 
 app.listen(PORT, () => {
   console.log(`server starting on port ${PORT}`)
+  console.log(process.env.DB_HOST)
 })
