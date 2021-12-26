@@ -5,8 +5,21 @@ const commonHelper = require('../helpers/common')
 
 const getWallets = async (req, res, next) => {
   try {
-    const result = await modelWallets.getWallets()
-    commonHelper.response(res, result, 201, 'data found')
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 4
+    const offset = (page - 1) * limit
+    const result = await modelWallets.getWallets({
+      offset: offset,
+      limit: limit
+    })
+    const resultCount = await modelWallets.countWallets()
+    const { total } = resultCount[0]
+    commonHelper.response(res, result, 200, 'data found', {
+      currentPage: page,
+      limit: limit,
+      totalData: total,
+      totalPage: Math.ceil(total / limit)
+    })
   } catch (error) {
     console.log(error)
     const err = new createError.InternalServerError()

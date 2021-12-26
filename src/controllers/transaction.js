@@ -7,11 +7,23 @@ const getTransaction = async (req, res, next) => {
   try {
     const sort = req.query.sort || 'created_at'
     const order = req.query.order || 'desc'
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 4
+    const offset = (page - 1) * limit
     const result = await modelTransaction.getTransaction({
       sort: sort,
-      order: order
+      order: order,
+      offset: offset,
+      limit: limit
     })
-    commonHelper.response(res, result, 201, 'data found')
+    const resultCount = await modelTransaction.countTransaction()
+    const { total } = resultCount[0]
+    commonHelper.response(res, result, 200, 'data found', {
+      currentPage: page,
+      limit: limit,
+      totalData: total,
+      totalPage: Math.ceil(total / limit)
+    })
   } catch (error) {
     console.log(error)
     const err = new createError.InternalServerError()

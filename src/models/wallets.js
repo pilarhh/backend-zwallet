@@ -48,9 +48,22 @@ const deleteWallets = (id) => {
   })
 }
 
+const countWallets = () => {
+  return new Promise((resolve, reject) => {
+    connection.query('SELECT COUNT(*) AS total FROM wallets', (error, result) => {
+      if (!error) {
+        resolve(result)
+      } else {
+        reject(error)
+      }
+    })
+  })
+}
+
 module.exports = {
   getWallets,
   insertWallets,
   updateWallets,
-  deleteWallets
+  deleteWallets,
+  countWallets
 }

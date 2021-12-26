@@ -88,11 +88,11 @@ const login = async (req, res, next) => {
     const [user] = await userModel.find(email)
     console.log(user)
     if (!user) {
-      return next(createError(403, 'email atau password anda salah'))
+      return next(createError(403, 'your email or password is wrong'))
     }
     const resultHash = await bcrypt.compare(password, user.password)
     if (resultHash) {
-      commonHelper.response(res, null, 200, 'anda berhasil login')
+      commonHelper.response(res, null, 200, 'login successful')
     }
   } catch (error) {
     console.log(error)

@@ -24,5 +24,4 @@ app.use(commonHelper.errorHandling)
 
 app.listen(PORT, () => {
   console.log(`server starting on port ${PORT}`)
-  console.log(process.env.DB_HOST)
 })
