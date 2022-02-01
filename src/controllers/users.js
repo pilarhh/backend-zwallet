@@ -1,9 +1,11 @@
+/* eslint-disable camelcase */
 const modelUsers = require('../models/users')
 const createError = require('http-errors')
 const commonHelper = require('../helpers/common')
 const { v4: uuidv4 } = require('uuid')
 const userModel = require('../models/user')
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 
 const getUsers = async (req, res, next) => {
   try {
@@ -91,9 +93,20 @@ const login = async (req, res, next) => {
       return next(createError(403, 'your email or password is wrong'))
     }
     const resultHash = await bcrypt.compare(password, user.password)
-    if (resultHash) {
-      commonHelper.response(res, null, 200, 'login successful')
+    if (!resultHash) return next(createError(403, 'email atau password anda salah'))
+    const secretKey = process.env.SECRET_KEY_JWT
+    const payload = {
+      email: user.email,
+      name: user.name,
+      role: user.role
     }
+    const verifyOptions = {
+      expiresIn: 60 * 60
+    }
+    const token = jwt.sign(payload, secretKey, verifyOptions)
+    user.token = token
+
+    commonHelper.response(res, user, 200, 'anda berhasil login')
   } catch (error) {
     console.log(error)
     next(createError(500, new createError.InternalServerError()))
@@ -102,7 +115,7 @@ const login = async (req, res, next) => {
 
 const register = async (req, res, next) => {
   try {
-    const { username, email, password, pin } = req.body
+    const { username, email, password } = req.body
 
     const user = await userModel.find(email)
     console.log(user)
@@ -115,8 +128,7 @@ const register = async (req, res, next) => {
       id: uuidv4(),
       username,
       email,
-      password: passwordHash,
-      pin
+      password: passwordHash
     }
     await userModel.create(data)
     commonHelper.response(res, data, 201, 'submitted successfully')
@@ -126,11 +138,43 @@ const register = async (req, res, next) => {
   }
 }
 
+const uploadProfilePicture = async (req, res, next) => {
+  try {
+    const { email, role } = req.body
+    const fileName = req.file.filename
+    const profile_picture = `${process.env.BASE_URL}/file/${fileName}`
+    const result = await modelUsers.uploadProfilePicture(email, role, profile_picture)
+    commonHelper.response(res, result, 200, 'profile picture is updated', null)
+  } catch (error) {
+    console.log(error)
+    next(createError(500, new createError.InternalServerError()))
+  }
+}
+
+const changePin = async (req, res, next) => {
+  try {
+    const id = req.params.id
+    const { pin } = req.body
+    const data = {
+      pin: pin,
+      updated_at: new Date()
+    }
+    await modelUsers.updateUsers(data, id)
+    commonHelper.response(res, data, 200, 'updated successfully')
+  } catch (error) {
+    console.log(error)
+    const err = new createError.InternalServerError()
+    next(err)
+  }
+}
+
 module.exports = {
   getUsers,
   updateUsers,
   insertUsers,
   deleteUsers,
   login,
-  register
+  register,
+  changePin,
+  uploadProfilePicture
 }

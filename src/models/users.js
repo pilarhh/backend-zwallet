@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 const connection = require('../config/db')
 
 const getUsers = ({ search, limit, offset }) => {
@@ -60,10 +61,24 @@ const countUsers = () => {
   })
 }
 
+const uploadProfilePicture = (email, role, profile_picture) => {
+  return new Promise((resolve, reject) => {
+    const sql = 'UPDATE users SET profile_picture = ? WHERE email = ? AND role = ?'
+    connection.query(sql, [profile_picture, email, role], (error, result) => {
+      if (!error) {
+        resolve(result)
+      } else {
+        reject(error)
+      }
+    })
+  })
+}
+
 module.exports = {
   getUsers,
   insertUsers,
   updateUsers,
   deleteUsers,
-  countUsers
+  countUsers,
+  uploadProfilePicture
 }

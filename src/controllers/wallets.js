@@ -2,6 +2,7 @@
 const modelWallets = require('../models/wallets')
 const createError = require('http-errors')
 const commonHelper = require('../helpers/common')
+const client = require('../config/redis')
 
 const getWallets = async (req, res, next) => {
   try {
@@ -14,6 +15,7 @@ const getWallets = async (req, res, next) => {
     })
     const resultCount = await modelWallets.countWallets()
     const { total } = resultCount[0]
+    client.setEx('product', 60 * 60, JSON.stringify(result))
     commonHelper.response(res, result, 200, 'data found', {
       currentPage: page,
       limit: limit,

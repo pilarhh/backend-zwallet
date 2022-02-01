@@ -18,6 +18,8 @@ app.use('/users', usersRoute)
 app.use('/wallets', walletsRoute)
 app.use('/transaction', transactionRoute)
 
+app.use('/file', express.static('./uploads'))
+
 app.use(commonHelper.handleNotFound)
 
 app.use(commonHelper.errorHandling)
