@@ -2,7 +2,7 @@ const express = require('express')
 const usersController = require('../controllers/users')
 const commonMiddle = require('../middleware/common')
 const route = express.Router()
-const { protect } = require('../middleware/auth')
+const { protect, emailToken } = require('../middleware/auth')
 const upload = require('../middleware/upload')
 
 route.post('/', usersController.insertUsers)
@@ -13,5 +13,6 @@ route.put('/:id', commonMiddle.validation, usersController.updateUsers)
 route.put('/changepin/:id', commonMiddle.validation, usersController.changePin)
 route.delete('/:id', usersController.deleteUsers)
 route.post('/profile-picture', upload.single('profile_picture'), usersController.uploadProfilePicture)
+route.get('/email-verification/:token', emailToken, usersController.setUserVerified)
 
 module.exports = route

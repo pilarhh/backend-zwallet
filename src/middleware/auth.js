@@ -21,6 +21,21 @@ const protect = (req, res, next) => {
   }
 }
 
+const emailToken = (req, res, next) => {
+  try {
+    const token = req.params.token
+    const secretKey = process.env.SECRET_KEY
+    const decoded = jwt.verify(token, secretKey)
+    req.email = decoded.email
+    req.id = decoded.id
+    next()
+  } catch (err) {
+    if (err && err.name === 'JsonWebTokenError') { return next(createError(400, 'Token is invalid')) } else if (err && err.name === 'TokenExpiredError') { return next(createError(400, 'Token has expired')) } else {
+      return next(createError(400, 'Token is not actived'))
+    }
+  }
+}
+
 const isAdmin = (req, res, next) => {
   const role = req.role
   if (role !== 'admin') return next(createError(403, 'You cannot access'))
@@ -29,5 +44,6 @@ const isAdmin = (req, res, next) => {
 
 module.exports = {
   protect,
-  isAdmin
+  isAdmin,
+  emailToken
 }

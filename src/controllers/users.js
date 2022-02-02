@@ -128,10 +128,24 @@ const register = async (req, res, next) => {
       id: uuidv4(),
       username,
       email,
-      password: passwordHash
+      password: passwordHash,
+      verified: 'no'
     }
+
     await userModel.create(data)
+    // const secretKey = process.env.SECRET_KEY_JWT
+    // const payload = {
+    //   email: data.email,
+    //   id: data.id
+    // }
+    // const verifyOptions = {
+    //   expiresIn: 60 * 60
+    // }
+    // const token = jwt.sign(payload, secretKey, verifyOptions)
+
+    commonHelper.sendEmail(email)
     commonHelper.response(res, data, 201, 'submitted successfully')
+    // console.log(token)
   } catch (error) {
     console.log(error)
     next(new createError.InternalServerError())
@@ -148,6 +162,22 @@ const uploadProfilePicture = async (req, res, next) => {
   } catch (error) {
     console.log(error)
     next(createError(500, new createError.InternalServerError()))
+  }
+}
+
+const setUserVerified = async (req, res, next) => {
+  try {
+    const id = req.id
+    const data = {
+      verified: 'yes'
+    }
+    const result = await modelUsers.setVerifiedUser(data, id)
+    commonHelper.response(res, [data, result], 200, 'Your account has been verified')
+  } catch (error) {
+    const errorRes = new Error('Internal Server Error')
+    errorRes.status = 500
+    console.log(error)
+    next(errorRes)
   }
 }
 
@@ -176,5 +206,6 @@ module.exports = {
   login,
   register,
   changePin,
-  uploadProfilePicture
+  uploadProfilePicture,
+  setUserVerified
 }

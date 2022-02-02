@@ -63,8 +63,19 @@ const countUsers = () => {
 
 const uploadProfilePicture = (email, role, profile_picture) => {
   return new Promise((resolve, reject) => {
-    const sql = 'UPDATE users SET profile_picture = ? WHERE email = ? AND role = ?'
-    connection.query(sql, [profile_picture, email, role], (error, result) => {
+    connection.query('UPDATE users SET profile_picture = ? WHERE email = ? AND role = ?', [profile_picture, email, role], (error, result) => {
+      if (!error) {
+        resolve(result)
+      } else {
+        reject(error)
+      }
+    })
+  })
+}
+
+const setVerifiedUser = (data, email) => {
+  return Promise((resolve, reject) => {
+    connection.query('UPDATE users SET ? WHERE id = ?', [data, email], (error, result) => {
       if (!error) {
         resolve(result)
       } else {
@@ -80,5 +91,6 @@ module.exports = {
   updateUsers,
   deleteUsers,
   countUsers,
-  uploadProfilePicture
+  uploadProfilePicture,
+  setVerifiedUser
 }
