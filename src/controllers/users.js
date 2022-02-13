@@ -93,7 +93,7 @@ const login = async (req, res, next) => {
       return next(createError(403, 'your email or password is wrong'))
     }
     const resultHash = await bcrypt.compare(password, user.password)
-    if (!resultHash) return next(createError(403, 'email atau password anda salah'))
+    if (!resultHash) return next(createError(403, 'your email or password is wrong'))
     const secretKey = process.env.SECRET_KEY_JWT
     const payload = {
       email: user.email,
@@ -106,7 +106,7 @@ const login = async (req, res, next) => {
     const token = jwt.sign(payload, secretKey, verifyOptions)
     user.token = token
 
-    commonHelper.response(res, user, 200, 'anda berhasil login')
+    commonHelper.response(res, user, 200, 'login successful')
   } catch (error) {
     console.log(error)
     next(createError(500, new createError.InternalServerError()))
