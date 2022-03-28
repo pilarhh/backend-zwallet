@@ -3,7 +3,31 @@ const connection = require('../config/db')
 
 const getUsers = ({ search, limit, offset }) => {
   return new Promise((resolve, reject) => {
-    connection.query(`SELECT * FROM users WHERE username LIKE '%${search}%' LIMIT ? OFFSET ?`, [limit, offset], (error, result) => {
+    connection.query(`SELECT users.id, users.email, users.username, users.phone_number, users.pin, users.profile_picture, wallets.id AS wallet_id, wallets.balance FROM users JOIN wallets ON (wallets.id_user = users.id) WHERE username LIKE '%${search}%' LIMIT ? OFFSET ?`, [limit, offset], (error, result) => {
+      if (!error) {
+        resolve(result)
+      } else {
+        reject(error)
+      }
+    })
+  })
+}
+
+const getUserDetail = (id) => {
+  return new Promise((resolve, reject) => {
+    connection.query('SELECT users.id, users.email, users.username, users.phone_number, users.pin, users.profile_picture, wallets.id AS wallet_id, wallets.balance FROM users JOIN wallets ON (wallets.id_user = users.id) WHERE users.id = ?', id, (error, result) => {
+      if (!error) {
+        resolve(result)
+      } else {
+        reject(error)
+      }
+    })
+  })
+}
+
+const getUserLogin = (email) => {
+  return new Promise((resolve, reject) => {
+    connection.query('SELECT users.id, users.email, users.username, users.phone_number, users.pin, users.profile_picture, wallets.id AS wallet_id, wallets.balance FROM users JOIN wallets ON (wallets.id_user = users.id) WHERE email = ?', email, (error, result) => {
       if (!error) {
         resolve(result)
       } else {
@@ -49,21 +73,22 @@ const deleteUsers = (id) => {
   })
 }
 
-const countUsers = () => {
+const findUser = (field, record) => {
   return new Promise((resolve, reject) => {
-    connection.query('SELECT COUNT(*) AS total FROM users', (error, result) => {
+    connection.query(`SELECT * FROM users WHERE ${field} = '${record}'`, (error, result) => {
       if (!error) {
         resolve(result)
       } else {
+        console.log(error)
         reject(error)
       }
     })
   })
 }
 
-const uploadProfilePicture = (email, role, profile_picture) => {
+const countUsers = () => {
   return new Promise((resolve, reject) => {
-    connection.query('UPDATE users SET profile_picture = ? WHERE email = ? AND role = ?', [profile_picture, email, role], (error, result) => {
+    connection.query('SELECT COUNT(*) AS total FROM users', (error, result) => {
       if (!error) {
         resolve(result)
       } else {
@@ -90,7 +115,9 @@ module.exports = {
   insertUsers,
   updateUsers,
   deleteUsers,
+  findUser,
   countUsers,
-  uploadProfilePicture,
-  setVerifiedUser
+  setVerifiedUser,
+  getUserDetail,
+  getUserLogin
 }

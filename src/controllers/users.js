@@ -11,7 +11,7 @@ const getUsers = async (req, res, next) => {
   try {
     const search = req.query.username || ''
     const page = parseInt(req.query.page) || 1
-    const limit = parseInt(req.query.limit) || 4
+    const limit = parseInt(req.query.limit) || 5
     const offset = (page - 1) * limit
     const result = await modelUsers.getUsers({
       search: search,
@@ -26,6 +26,18 @@ const getUsers = async (req, res, next) => {
       totalData: total,
       totalPage: Math.ceil(total / limit)
     })
+  } catch (error) {
+    console.log(error)
+    const err = new createError.InternalServerError()
+    next(err)
+  }
+}
+
+const userDetail = async (req, res, next) => {
+  try {
+    const id = req.params.id
+    const result = await modelUsers.getUserDetail(id)
+    commonHelper.response(res, result, 200, 'data found')
   } catch (error) {
     console.log(error)
     const err = new createError.InternalServerError()
@@ -86,14 +98,15 @@ const deleteUsers = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   try {
-    const { email, password } = req.body
+    const { email } = req.body
     const [user] = await userModel.find(email)
+    const [result] = await modelUsers.getUserLogin(email)
     console.log(user)
     if (!user) {
       return next(createError(403, 'your email or password is wrong'))
     }
-    const resultHash = await bcrypt.compare(password, user.password)
-    if (!resultHash) return next(createError(403, 'your email or password is wrong'))
+    // const resultHash = await bcrypt.compare(password, user.password)
+    // if (!resultHash) return next(createError(403, 'your email or password is wrong'))
     const secretKey = process.env.SECRET_KEY_JWT
     const payload = {
       email: user.email,
@@ -104,9 +117,9 @@ const login = async (req, res, next) => {
       expiresIn: 60 * 60
     }
     const token = jwt.sign(payload, secretKey, verifyOptions)
-    user.token = token
+    result.token = token
 
-    commonHelper.response(res, user, 200, 'login successful')
+    commonHelper.response(res, result, 200, 'login successful')
   } catch (error) {
     console.log(error)
     next(createError(500, new createError.InternalServerError()))
@@ -154,13 +167,14 @@ const register = async (req, res, next) => {
 
 const uploadProfilePicture = async (req, res, next) => {
   try {
-    const { email, role } = req.body
+    const id = req.params.id
     const fileName = req.file.filename
-    const profile_picture = `${process.env.BASE_URL}/file/${fileName}`
-    const result = await modelUsers.uploadProfilePicture(email, role, profile_picture)
-    commonHelper.response(res, result, 200, 'profile picture is updated', null)
+    const data = { profile_picture: `${process.env.BASE_URL}/file/${fileName}` }
+    await modelUsers.updateUsers(data, id)
+    commonHelper.response(res, data, 200, 'profile picture is updated')
   } catch (error) {
     console.log(error)
+    console.log(req.file)
     next(createError(500, new createError.InternalServerError()))
   }
 }
@@ -198,6 +212,23 @@ const changePin = async (req, res, next) => {
   }
 }
 
+const changePhone = async (req, res, next) => {
+  try {
+    const id = req.params.id
+    const { phone_number } = req.body
+    const data = {
+      phone_number: phone_number,
+      updated_at: new Date()
+    }
+    await modelUsers.updateUsers(data, id)
+    commonHelper.response(res, data, 200, 'updated successfully')
+  } catch (error) {
+    console.log(error)
+    const err = new createError.InternalServerError()
+    next(err)
+  }
+}
+
 module.exports = {
   getUsers,
   updateUsers,
@@ -207,5 +238,7 @@ module.exports = {
   register,
   changePin,
   uploadProfilePicture,
-  setUserVerified
+  setUserVerified,
+  userDetail,
+  changePhone
 }

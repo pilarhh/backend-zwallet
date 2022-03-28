@@ -1,8 +1,20 @@
 const connection = require('../config/db')
 
-const getTransaction = ({ sort, order }) => {
+const getTransaction = ({ limit, offset }) => {
   return new Promise((resolve, reject) => {
-    connection.query(`SELECT * FROM transaction ORDER BY ?? ${order}`, sort, (error, result) => {
+    connection.query('SELECT * FROM transaction LIMIT ? OFFSET ?', [offset, limit], (error, result) => {
+      if (!error) {
+        resolve(result)
+      } else {
+        reject(error)
+      }
+    })
+  })
+}
+
+const getTransactionOrder = ({ sort, order, limit, offset }) => {
+  return new Promise((resolve, reject) => {
+    connection.query(`SELECT * FROM transaction ORDER BY ?? ${order} LIMIT ? OFFSET ?`, [sort, limit, offset], (error, result) => {
       if (!error) {
         resolve(result)
       } else {
@@ -62,6 +74,7 @@ const countTransaction = () => {
 
 module.exports = {
   getTransaction,
+  getTransactionOrder,
   insertTransaction,
   updateTransaction,
   deleteTransaction,

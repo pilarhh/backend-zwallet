@@ -3,6 +3,8 @@ const nodemailer = require('nodemailer')
 const handleNotFound = (req, res, next) => {
   res.status(404)
   res.json({
+    status: 'failed',
+    code: '404',
     message: 'url not found'
   })
 }

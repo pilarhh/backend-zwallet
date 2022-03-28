@@ -6,7 +6,7 @@ const chaiHttp = require('chai-http')
 const expect = require('chai').expect
 chai.use(chaiHttp)
 
-const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imtlc2hpQGdtYWlsLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNjQ0Nzg2MDg4LCJleHAiOjE2NDQ3ODk2ODh9.d-g3efO1_hxpywmZ90tNGZSjRsy4M-mD7W7InXlX3_M'
+const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imtlc2hpQGdtYWlsLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNjQ0ODExNDgyLCJleHAiOjE2NDQ4MTUwODJ9.dvXjRk8t0DEHr6FICrzHOvegGaegqJcUFs4nMN4MEIo'
 
 const baseGetUnit = (route) => {
   return chai.request('http://localhost:4000').get(`/${route}`).set({ Authorization: `Bearer ${token}` })
@@ -124,7 +124,7 @@ describe('Login User', () => {
       })
   })
 
-  it('wrong username or password', (done) => {
+  it('expect to not login with wrong email or password', (done) => {
     basePostUnit('login')
       .send(falseUser)
       .end((err, res) => {

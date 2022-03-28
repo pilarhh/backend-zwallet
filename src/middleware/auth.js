@@ -38,7 +38,7 @@ const emailToken = (req, res, next) => {
 
 const isAdmin = (req, res, next) => {
   const role = req.role
-  if (role !== 'admin') return next(createError(403, 'You cannot access'))
+  if (role !== 'admin') return next(createError(403, 'You cannot access, only admin can access'))
   next()
 }
 
