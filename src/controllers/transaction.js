@@ -36,12 +36,14 @@ const getTransaction = async (req, res, next) => {
 
 const getTransactionOrder = async (req, res, next) => {
   try {
+    const id_sender = req.params.id_sender
     const sort = req.query.sort || 'created_at'
     const order = req.query.order || 'desc'
     const page = parseInt(req.query.page) || 1
     const limit = parseInt(req.query.limit) || 4
     const offset = (page - 1) * limit
     const result = await modelTransaction.getTransactionOrder({
+      id: id_sender,
       sort: sort,
       order: order,
       offset: offset,
@@ -119,10 +121,36 @@ const deleteTransaction = async (req, res, next) => {
   }
 }
 
+const expense = async (req, res, next) => {
+  try {
+    const id = req.params.id_sender
+    const result = await modelTransaction.getExpense(id)
+    commonHelper.response(res, result, 200, null)
+  } catch (error) {
+    console.log(error)
+    const err = new createError.InternalServerError()
+    next(err)
+  }
+}
+
+const income = async (req, res, next) => {
+  try {
+    const id = req.params.id_sender
+    const result = await modelTransaction.getIncome(id)
+    commonHelper.response(res, result, 200, null)
+  } catch (error) {
+    console.log(error)
+    const err = new createError.InternalServerError()
+    next(err)
+  }
+}
+
 module.exports = {
   getTransaction,
   updateTransaction,
   insertTransaction,
   deleteTransaction,
-  getTransactionOrder
+  getTransactionOrder,
+  expense,
+  income
 }

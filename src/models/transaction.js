@@ -12,9 +12,21 @@ const getTransaction = ({ limit, offset }) => {
   })
 }
 
-const getTransactionOrder = ({ sort, order, limit, offset }) => {
+// const getTransactionOrder = ({ id, sort, order, limit, offset }) => {
+//   return new Promise((resolve, reject) => {
+//     connection.query(`SELECT transaction.id as record_no, transaction.id_sender, transaction.id_receiver, transaction.type, users.username as receiver, transaction.amount, transaction.created_at FROM transaction JOIN wallets ON (wallets.id = transaction.id_receiver) JOIN users ON (users.id = wallets.id_user) WHERE transaction.id_sender = '${id}' ORDER BY ?? ${order} LIMIT ? OFFSET ?`, [sort, limit, offset], (error, result) => {
+//       if (!error) {
+//         resolve(result)
+//       } else {
+//         reject(error)
+//       }
+//     })
+//   })
+// }
+
+const getTransactionOrder = ({ id, sort, order, limit, offset }) => {
   return new Promise((resolve, reject) => {
-    connection.query(`SELECT * FROM transaction ORDER BY ?? ${order} LIMIT ? OFFSET ?`, [sort, limit, offset], (error, result) => {
+    connection.query(`SELECT * FROM transaction WHERE transaction.id_sender = '${id}' ORDER BY ?? ${order} LIMIT ? OFFSET ?`, [sort, limit, offset], (error, result) => {
       if (!error) {
         resolve(result)
       } else {
@@ -72,11 +84,37 @@ const countTransaction = () => {
   })
 }
 
+const getExpense = (id) => {
+  return new Promise((resolve, reject) => {
+    connection.query(`SELECT id_sender, SUM(amount) as amount FROM transaction WHERE id_sender = '${id}' and type = 'Transfer'`, (error, result) => {
+      if (!error) {
+        resolve(result)
+      } else {
+        reject(error)
+      }
+    })
+  })
+}
+
+const getIncome = (id) => {
+  return new Promise((resolve, reject) => {
+    connection.query(`SELECT id_sender, SUM(amount) as amount FROM transaction WHERE (id_receiver = '${id}' and type = 'Transfer') or (id_sender = '${id}' and type = 'Top up')`, (error, result) => {
+      if (!error) {
+        resolve(result)
+      } else {
+        reject(error)
+      }
+    })
+  })
+}
+
 module.exports = {
   getTransaction,
   getTransactionOrder,
   insertTransaction,
   updateTransaction,
   deleteTransaction,
-  countTransaction
+  countTransaction,
+  getExpense,
+  getIncome
 }
