@@ -11,7 +11,6 @@ const getTransaction = ({ limit, offset }) => {
     })
   })
 }
-
 // const getTransactionOrder = ({ id, sort, order, limit, offset }) => {
 //   return new Promise((resolve, reject) => {
 //     connection.query(`SELECT transaction.id as record_no, transaction.id_sender, transaction.id_receiver, transaction.type, users.username as receiver, transaction.amount, transaction.created_at FROM transaction JOIN wallets ON (wallets.id = transaction.id_receiver) JOIN users ON (users.id = wallets.id_user) WHERE transaction.id_sender = '${id}' ORDER BY ?? ${order} LIMIT ? OFFSET ?`, [sort, limit, offset], (error, result) => {
