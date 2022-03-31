@@ -11,21 +11,10 @@ const getTransaction = ({ limit, offset }) => {
     })
   })
 }
-// const getTransactionOrder = ({ id, sort, order, limit, offset }) => {
-//   return new Promise((resolve, reject) => {
-//     connection.query(`SELECT transaction.id as record_no, transaction.id_sender, transaction.id_receiver, transaction.type, users.username as receiver, transaction.amount, transaction.created_at FROM transaction JOIN wallets ON (wallets.id = transaction.id_receiver) JOIN users ON (users.id = wallets.id_user) WHERE transaction.id_sender = '${id}' ORDER BY ?? ${order} LIMIT ? OFFSET ?`, [sort, limit, offset], (error, result) => {
-//       if (!error) {
-//         resolve(result)
-//       } else {
-//         reject(error)
-//       }
-//     })
-//   })
-// }
 
 const getTransactionOrder = ({ id, sort, order, limit, offset }) => {
   return new Promise((resolve, reject) => {
-    connection.query(`SELECT * FROM transaction WHERE transaction.id_sender = '${id}' ORDER BY ?? ${order} LIMIT ? OFFSET ?`, [sort, limit, offset], (error, result) => {
+    connection.query(`SELECT transaction.amount, transaction.type, transaction.created_at, users.username as receiver, users.profile_picture as receiver_pic from transaction JOIN users ON (transaction.id_receiver = users.id) or (transaction.id_sender = users.id and type = 'Top up') WHERE transaction.id_sender = '${id}' ORDER BY ?? ${order} LIMIT ? OFFSET ?`, [sort, limit, offset], (error, result) => {
       if (!error) {
         resolve(result)
       } else {
@@ -34,6 +23,18 @@ const getTransactionOrder = ({ id, sort, order, limit, offset }) => {
     })
   })
 }
+
+// const getTransactionOrder = ({ id, sort, order, limit, offset }) => {
+//   return new Promise((resolve, reject) => {
+//     connection.query(`SELECT * FROM transaction WHERE transaction.id_sender = '${id}' ORDER BY ?? ${order} LIMIT ? OFFSET ?`, [sort, limit, offset], (error, result) => {
+//       if (!error) {
+//         resolve(result)
+//       } else {
+//         reject(error)
+//       }
+//     })
+//   })
+// }
 
 const insertTransaction = (data) => {
   return new Promise((resolve, reject) => {
