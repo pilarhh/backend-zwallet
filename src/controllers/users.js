@@ -107,7 +107,7 @@ const login = async (req, res, next) => {
     }
     // const resultHash = await bcrypt.compare(password, user.password)
     // if (!resultHash) return next(createError(403, 'your email or password is wrong'))
-    const secretKey = process.env.SECRET_KEY_JWT || 'qwerty123'
+    const secretKey = `${process.env.SECRET_KEY_JWT}`
     console.log(secretKey)
     const payload = {
       email: user.email,
