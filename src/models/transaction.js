@@ -98,7 +98,7 @@ const getExpense = (id) => {
 
 const getIncome = (id) => {
   return new Promise((resolve, reject) => {
-    connection.query(`SELECT id_sender, SUM(amount) as amount FROM transaction WHERE (id_receiver = '${id}' and type = 'Transfer') or (id_sender = '${id}' and type = 'Top up')`, (error, result) => {
+    connection.query(`SELECT SUM(amount) as amount FROM transaction WHERE (id_receiver = '${id}' and type = 'Transfer') or (id_sender = '${id}' and type = 'Top up')`, (error, result) => {
       if (!error) {
         resolve(result)
       } else {
