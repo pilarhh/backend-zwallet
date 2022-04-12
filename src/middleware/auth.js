@@ -24,7 +24,7 @@ const protect = (req, res, next) => {
 const emailToken = (req, res, next) => {
   try {
     const token = req.params.token
-    const secretKey = process.env.SECRET_KEY
+    const secretKey = process.env.SECRET_KEY_JWT
     const decoded = jwt.verify(token, secretKey)
     req.email = decoded.email
     req.id = decoded.id
