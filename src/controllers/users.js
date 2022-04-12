@@ -107,7 +107,8 @@ const login = async (req, res, next) => {
     }
     // const resultHash = await bcrypt.compare(password, user.password)
     // if (!resultHash) return next(createError(403, 'your email or password is wrong'))
-    const secretKey = process.env.SECRET_KEY_JWT
+    const secretKey = process.env.SECRET_KEY_JWT || 'qwerty123'
+    console.log(secretKey)
     const payload = {
       email: user.email,
       name: user.name,
@@ -146,19 +147,9 @@ const register = async (req, res, next) => {
     }
 
     await userModel.create(data)
-    // const secretKey = process.env.SECRET_KEY_JWT
-    // const payload = {
-    //   email: data.email,
-    //   id: data.id
-    // }
-    // const verifyOptions = {
-    //   expiresIn: 60 * 60
-    // }
-    // const token = jwt.sign(payload, secretKey, verifyOptions)
 
     commonHelper.sendEmail(email)
     commonHelper.response(res, data, 201, 'submitted successfully')
-    // console.log(token)
   } catch (error) {
     console.log(error)
     next(new createError.InternalServerError())
